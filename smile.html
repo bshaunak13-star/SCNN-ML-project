@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Secret Beauty</title>
+    <style>
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container { text-align: center; padding: 20px; }
+
+        h1 { color: #ad1457; font-size: 2rem; }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #camera-btn {
+            background-color: #ff4081;
+            color: white;
+            z-index: 10;
+        }
+
+        /* The button that runs away */
+        #evade-btn {
+            background-color: #ffffff;
+            color: #ad1457;
+            position: absolute;
+            white-space: nowrap;
+        }
+
+        #video-result {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        video {
+            width: 95%;
+            max-width: 450px;
+            border-radius: 30px;
+            border: 8px solid white;
+            transform: scaleX(-1); /* Mirror effect */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+
+        .smile-text {
+            color: #d81b60;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen" class="container">
+        <h1>Are you ready to see the most beautiful thing in the world?</h1>
+        <button id="camera-btn" class="btn">YES! CLICK TO SEE</button>
+        <button id="evade-btn" class="btn">No, show me something else</button>
+    </div>
+
+    <div id="video-result" class="container">
+        <video id="webcam" autoplay playsinline></video>
+        <h2 class="smile-text">Exactly. That smile is the most beautiful!</h2>
+    </div>
+
+    <script>
+        const cameraBtn = document.getElementById('camera-btn');
+        const evadeBtn = document.getElementById('evade-btn');
+        const introScreen = document.getElementById('intro-screen');
+        const videoResult = document.getElementById('video-result');
+        const video = document.getElementById('webcam');
+
+        // Function to make the "No" button move away
+        const moveButton = () => {
+            // Calculate random positions within the viewport
+            const x = Math.random() * (window.innerWidth - evadeBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - evadeBtn.offsetHeight);
+            
+            evadeBtn.style.left = `${x}px`;
+            evadeBtn.style.top = `${y}px`;
+        };
+
+        // Move button when mouse enters or on touch
+        evadeBtn.addEventListener('mouseenter', moveButton);
+        evadeBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveButton();
+        });
+
+        // Camera access logic
+        cameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
+                introScreen.style.display = 'none';
+                videoResult.style.display = 'flex';
+            } catch (err) {
+                alert("The camera couldn't see you! Check your permissions.");
+            }
+        });
+    </script>
+</body>
+</html>
